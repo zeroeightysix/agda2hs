@@ -34,8 +34,8 @@ checkNewtype name cs = do
     (Hs.QualConDecl () _ _ (Hs.ConDecl () cName types):_) -> checkNewtypeCon cName types
     _ -> __IMPOSSIBLE__
 
-compileData :: AsNewType -> [Hs.Deriving ()] -> Definition -> C [Hs.Decl ()]
-compileData newtyp ds def = do
+compileData :: AsNewType -> AsGADT -> [Hs.Deriving ()] -> Definition -> C [Hs.Decl ()]
+compileData newtyp gadt ds def = do
   let d = hsName $ prettyShow $ qnameName $ defName def
   checkValidTypeName d
   let Datatype{dataPars = n, dataIxs = numIxs, dataCons = cs} = theDef def
@@ -45,15 +45,18 @@ compileData newtyp ds def = do
   let params = teleArgs tel
   binds <- compileTeleBinds False tel -- TODO: add kind annotations?
   addContext tel $ do
-    -- TODO: filter out erased constructors
-    cs <- mapM (compileConstructor params) cs
     let hd = foldl (Hs.DHApp ()) (Hs.DHead () d) binds
-
     let target = if newtyp then Hs.NewType () else Hs.DataType ()
 
-    when newtyp (checkNewtype d cs)
-
-    return [Hs.DataDecl () target Nothing hd cs ds]
+    if gadt then do
+      -- TODO: filter out erased constructors
+      cs <- mapM (compileConstructorGADT params d) cs
+      return [Hs.GDataDecl () target Nothing hd Nothing cs ds]
+    else do
+      -- TODO: also here
+      cs <- mapM (compileConstructor params) cs
+      when newtyp (checkNewtype d cs)
+      return [Hs.DataDecl () target Nothing hd cs ds]
 
 allIndicesErased :: Type -> C ()
 allIndicesErased t = reduce (unEl t) >>= \case
@@ -77,6 +80,21 @@ compileConstructor params c = do
   checkValidConName conName
   args <- compileConstructorArgs tel
   return $ Hs.QualConDecl () Nothing Nothing $ Hs.ConDecl () conName args
+
+compileConstructorGADT :: [Arg Term] -> Hs.Name () -> QName -> C (Hs.GadtDecl ())
+compileConstructorGADT params tyName c = do
+  reportSDoc "agda2hs.data.con" 15 $ text "compileConstructor" <+> prettyTCM c
+  reportSDoc "agda2hs.data.con" 20 $ text "  params = " <+> prettyTCM params
+  ty <- defType <$> getConstInfo c
+  reportSDoc "agda2hs.data.con" 30 $ text "  ty (before piApply) = " <+> prettyTCM ty
+  ty <- ty `piApplyM` params
+  reportSDoc "agda2hs.data.con" 20 $ text "  ty = " <+> prettyTCM ty
+  TelV tel _ <- telView ty
+  let conName = hsName $ prettyShow $ qnameName c
+  checkValidConName conName
+  args <- foldr (Hs.TyFun ()) (Hs.TyVar () tyName) <$> compileConstructorArgs tel
+  return $ Hs.GadtDecl () conName Nothing Nothing Nothing args
+  -- return $ Hs.GadtDecl () Nothing Nothing $ Hs.ConDecl () conName args
 
 compileConstructorArgs :: Telescope -> C [Hs.Type ()]
 compileConstructorArgs EmptyTel = return []

@@ -199,6 +199,7 @@ hasCompilePragma q = processPragma q <&> \case
   CompileToPragma{} -> True
   NewTypePragma{} -> True
   DerivePragma{} -> True
+  GADTPragma{} -> True
 
 -- Exploits the fact that the name of the record type and the name of the record module are the
 -- same, including the unique name ids.

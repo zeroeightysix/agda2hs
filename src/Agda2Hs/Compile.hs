@@ -125,8 +125,9 @@ compile genv tlm _ def =
 
         (ClassPragma ms      , Record{}  ) -> pure <$> compileRecord (ToClass ms) def
         (NewTypePragma ds    , Record{}  ) -> pure <$> compileRecord (ToRecord True ds) def
-        (NewTypePragma ds    , Datatype{}) -> compileData True ds def
-        (DefaultPragma ds    , Datatype{}) -> compileData False ds def
+        (NewTypePragma ds    , Datatype{}) -> compileData True False ds def
+        (DefaultPragma ds    , Datatype{}) -> compileData False False ds def
+        (GADTPragma ds       , Datatype{}) -> compileData False True ds def
         (DerivePragma s      , _         ) | isInstance -> pure <$> compileInstance (ToDerivation s) def
         (DefaultPragma _     , Axiom{}   ) | isInstance -> pure <$> compileInstance (ToDerivation Nothing) def
         (DefaultPragma _     , _         ) | isInstance -> pure <$> compileInstance ToDefinition def

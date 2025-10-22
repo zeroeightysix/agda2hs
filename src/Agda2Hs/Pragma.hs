@@ -58,7 +58,7 @@ data ParsedPragma
   | TuplePragma Hs.Boxed
   | CompileToPragma String
   | DerivePragma (Maybe (Hs.DerivStrategy ()))
-  | GADTPragma
+  | GADTPragma [Hs.Deriving ()]
   deriving (Eq, Show)
 
 derivePragma :: String
@@ -96,7 +96,7 @@ processPragma qn = liftTCM (getUniqueCompilerPragma pragmaName qn) >>= \case
     | s == "transparent"          -> return TransparentPragma
     | s == "tuple"                -> return $ TuplePragma Hs.Boxed
     | s == "unboxed-tuple"        -> return $ TuplePragma Hs.Unboxed
-    | s == "gadt"                 -> return GADTPragma
+    | s == "gadt"                 -> return $ GADTPragma []
     | "to" `isPrefixOf` s         -> return $ CompileToPragma (drop 3 s)
     | s == newtypePragma          -> return $ NewTypePragma []
     | s == derivePragma           -> return $ DerivePragma Nothing

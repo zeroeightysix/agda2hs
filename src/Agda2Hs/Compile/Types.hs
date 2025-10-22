@@ -211,6 +211,9 @@ data CompiledDom
 -- | Whether a datatype/record should be compiled as a @newtype@ haskell definition.
 type AsNewType = Bool
 
+-- | Whether a datatype should be compiled as a Haskell GADT.
+type AsGADT = Bool
+
 -- | Compilation target for an Agda record definition.
 data RecordTarget
   = ToRecord AsNewType [Hs.Deriving ()]
