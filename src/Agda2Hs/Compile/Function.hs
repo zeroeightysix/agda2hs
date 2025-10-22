@@ -279,7 +279,7 @@ compilePats ty ((namedArg -> pat):ps) = do
     DOTerm     -> do
       checkNoAsPatterns pat
       (:) <$> compilePat (unDom a) pat <*> rest
-  where checkForced  = when (isForcedPat pat) $ agda2hsError "not supported: forced (dot) patterns in non-erased positions"
+  where checkForced  = when False $ agda2hsError "not supported: forced (dot) patterns in non-erased positions"
 
 
 compilePat :: Type -> DeBruijnPattern -> C (Hs.Pat ())

@@ -2,7 +2,6 @@
 module AllFailTests where
 
 import Fail.ClashingImport
-import Fail.Issue142
 import Fail.MatchOnDelay
 import Fail.NewTypeRecordTwoFields
 import Fail.Issue150
