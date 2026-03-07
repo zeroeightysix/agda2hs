@@ -43,6 +43,7 @@ compileData target ds def = do
   TelV tel t <- telView {-UpTo n-} (defType def)
   reportSDoc "agda2hs.data" 10 $ text "Datatype telescope:" <+> prettyTCM tel
   --allIndicesErased t
+  when (target == ToGadt) $ tellExtension Hs.GADTs
   let params = take n $ teleArgs tel
   binds <- compileTeleBinds False tel -- TODO: add kind annotations?
   addContext tel $ do
@@ -190,4 +191,3 @@ checkCompileToDataPragma def s = noCheckNames $ do
             DOTerm -> __IMPOSSIBLE__
             DOInstance -> __IMPOSSIBLE__
       mx <$> underAbstraction dom tel nonErasedNames
-
