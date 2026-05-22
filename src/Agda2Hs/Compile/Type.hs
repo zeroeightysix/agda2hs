@@ -258,7 +258,9 @@ compileEqualityConstraint t = do
   Def _ es <- reduce t
   -- The arguments to equality are _a_ (level), _A_ (the type of elements), x (: A), and y (: A)
   -- We want to compile x and y
-  let Just (_:_:x:y:_) = allApplyElims es
+  let Just (_:a:x:y:_) = allApplyElims es
+  -- Validate that A (the type parameter) compiles to a valid Haskell kind
+  _ <- compileKind (El __DUMMY_SORT__ (unArg a))
   hsX <- compileType (unArg x)
   hsY <- compileType (unArg y)
   return $ DomEquality $ Hs.TypeA () $ Hs.TyInfix () hsX (Hs.UnpromotedName () (Hs.UnQual () (Hs.Symbol () "~"))) hsY
