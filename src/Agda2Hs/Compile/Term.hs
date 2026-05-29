@@ -655,7 +655,8 @@ checkInstance u = do
     Con c _ _
       | prettyShow (conName c) == "Agda.Builtin.Unit.tt" ||
         prettyShow (conName c) == "Haskell.Prim.IsTrue.itsTrue" ||
-        prettyShow (conName c) == "Haskell.Prim.IsFalse.itsFalse" -> return ()
+        prettyShow (conName c) == "Haskell.Prim.IsFalse.itsFalse" ||
+        prettyShow (conName c) == "Agda.Builtin.Equality._≡_.refl" -> return ()
     _ -> illegalInstance
 
   where
