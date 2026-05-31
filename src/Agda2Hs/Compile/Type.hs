@@ -101,7 +101,6 @@ compileType t = do
         DomType _ hsA -> Hs.TyFun () hsA <$> compileB
         DomConstraint hsA -> constrainType hsA <$> compileB
         DomDropped -> compileB
-        DomEquality hsA -> constrainType hsA <$> compileB
         DomForall Nothing -> compileB
         DomForall (Just hsA) -> qualifyType hsA <$> compileB
 
@@ -263,7 +262,7 @@ compileEqualityConstraint t = do
   _ <- compileKind (El __DUMMY_SORT__ (unArg a))
   hsX <- compileType (unArg x)
   hsY <- compileType (unArg y)
-  return $ DomEquality $ Hs.TypeA () $ Hs.TyInfix () hsX (Hs.UnpromotedName () (Hs.UnQual () (Hs.Symbol () "~"))) hsY
+  return $ DomConstraint $ Hs.TypeA () $ Hs.TyInfix () hsX (Hs.UnpromotedName () (Hs.UnQual () (Hs.Symbol () "~"))) hsY
 
 compileTeleBinds :: Bool -> Telescope -> C [Hs.TyVarBind ()]
 compileTeleBinds kinded = go

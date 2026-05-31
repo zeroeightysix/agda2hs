@@ -211,8 +211,6 @@ data CompiledDom
     -- ^ To a forall, with an optional type variable declaration. If Nothing, this is an implicit forall; otherwise, explicit.
   | DomDropped
     -- ^ To nothing (e.g. erased proofs)
-  | DomEquality (Hs.Asst ())
-    -- ^ To an equality constraint (e.g. `(a ~ b)`)
 
 
 -- | Whether a datatype/record should be compiled as a @newtype@ haskell definition.
