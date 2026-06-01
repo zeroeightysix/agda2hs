@@ -1,5 +1,7 @@
 {-# OPTIONS --polarity #-}
 
+module GadtSyntax where
+
 open import Haskell.Prelude
 
 data Bol : Set where Tru Fls : Bol
