@@ -1,5 +1,3 @@
-module EqualityConstraint where
-
 open import Haskell.Prelude
 
 postulate
