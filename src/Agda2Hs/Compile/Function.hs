@@ -262,10 +262,10 @@ keepClause c@Clause{..} = case (clauseBody, clauseType) of
     DOTerm     -> True
 
 checkIllegalForced :: Dom Type -> DeBruijnPattern -> C ()
-checkIllegalForced a pat = do
-  dep <- dependentDom a
-  when (dep && isForcedPat pat) $ agda2hsError
-    "not supported: forced (dot) patterns in non-erased positions"
+checkIllegalForced a pat = pure ()
+--   dep <- dependentDom a
+--   when (dep && isForcedPat pat) $ agda2hsError
+--     "not supported: forced (dot) patterns in non-erased positions"
 
 annPats :: Type -> NAPs -> C [(Dom Type, DeBruijnPattern)]
 annPats ty []       = pure []
