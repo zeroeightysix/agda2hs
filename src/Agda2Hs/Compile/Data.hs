@@ -40,7 +40,7 @@ compileData target ds def = do
   let d = hsName $ prettyShow $ qnameName $ defName def
   checkValidTypeName d
   let Datatype{dataPars = n, dataIxs = numIxs, dataCons = cs} = theDef def
-  TelV tel t <- telView {-UpTo n-} (defType def)
+  TelV tel t <- telViewUpTo (if target == ToGadt then -1 else n) (defType def)
   reportSDoc "agda2hs.data" 10 $ text "Datatype telescope:" <+> prettyTCM tel
   --allIndicesErased t
   when (target == ToGadt) $ tellExtension Hs.GADTs
